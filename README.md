@@ -140,3 +140,61 @@ joke will be generated.
     # ...
 
     ```
+
+    * **Use HTTParty to query the API.** The HTTParty gem provides an `HTTParty` class with class methods like `.get` and `.post` that we can use to make HTTP requests to an API from our app.
+
+    ```ruby
+    # app.rb
+    require 'sinatra'
+    require 'dotenv'
+
+    # require the gem
+    require 'httparty'
+
+    Dotenv.load
+
+    # test out the API - get breweries in/near Boston
+    city = "Boston"
+    state = "MA"
+
+    city_response = HTTParty.get("http://beermapping.com/webservice/locquery/#{ENV['BEER_MAPPING_API_KEY']}/#{city}")
+    state_response = HTTParty.get("http://beermapping.com/webservice/locstate/#{ENV['BEER_MAPPING_API_KEY']}/#{state}")
+    ```
+
+    If I put a `binding.pry` after hitting the API, I can check out what my response variables look like and write methods to retrieve the information I want for various pages on my app.
+
+    For example, say I want to allow a user to search for breweries by city on the breweries index page:
+
+    ```ruby
+    # app.rb
+    # ...
+
+    def city_search(city)
+      response = HTTParty.get("http://beermapping.com/webservice/locquery/#{ENV['BEER_MAPPING_API_KEY']}/#{city}")
+
+      # return an array of brewery hashes from the response we got
+    end
+
+    get '/breweries' do
+      if params[:city]
+        # we need to escape spaces, etc., in user input before passing it in the URL
+        city = URI.encode(params[:city])
+        @breweries = city_search(city)
+      else
+        # return breweries in Boston if no search term
+        @breweries = city_search("Boston")
+      end
+
+      erb :'breweries/index'
+    end
+    ```
+    ```html
+    <!-- views/breweries/index.erb -->
+
+    <h3>Search breweries by city:</h3>
+
+    <form method="get" action="/breweries">
+      <input type="text" name="city">
+      <input type="submit" value="Search">
+    </form>
+    ```
