@@ -72,8 +72,8 @@ with a Chuck Norris joke.  Every time we refresh the page a new Chuck Norris
 joke will be generated.
 
 
-## Using API's With Keys In Sinatra: ([Taken from Helen
-Hood](https://github.com/hchood/brewery_api_clinic))
+## Using API's With Keys In Sinatra: 
+[Taken from Helen Hood](https://github.com/hchood/brewery_api_clinic)
 
 ### SETUP:
 
