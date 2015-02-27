@@ -1,6 +1,6 @@
 ### API Clinic
 
-Resources:
+**Resources:**
 
 *  [Good website to find different API's](https://www.apitools.com/apis)
 *  [Dotenv Gem](https://github.com/bkeepers/dotenv)
@@ -18,14 +18,54 @@ API's will require a key.  To start off lets use the Chuck Norris API that
 doesn't require a key.
 
 ```ruby
-gem install httparty
+gem install httparty # installs httparty gem
 
-pry
+pry # opens up an irb session that will have text highlighting
 
+require 'httparty' # requires the http libary
+
+HTTParty.get("http://api.icndb.com/jokes/random") # makes call to the api
+```
+
+What we are doing in this quick example is making a GET request to the
+`/jokes/random` route of this persons website.  The Get request will return us
+a JSON object that looks something like this:
+
+```ruby
+[2] pry(main)> HTTParty.get("http://api.icndb.com/jokes/random")
+
+=> {"type"=>"success",
+ "value"=>
+  {"id"=>137,
+   "joke"=>"Tom Clancy has to pay royalties to Chuck Norris because &quot;The Sum of All Fears&quot; is the name of Chuck Norris' autobiography.",
+   "categories"=>[]}}
+```
+
+We could now convert this to our own Sinatra app:
+```ruby
+require 'sinatra'
 require 'httparty'
 
-HTTParty.get("http://api.icndb.com/jokes/random")
+def get_joke
+  json = HTTParty.get("http://api.icndb.com/jokes/random") # retrieves JSON
+  json["value"]["joke"] # returns just the joke
+end
+
+get '/' do
+  joke = get_joke
+  erb :home, locals: { joke: joke }
+end
+
+# this could be simplified to:
+
+get '/' do
+  erb :home, locals: { joke: get_joke }
+end
 ```
+
+Now inside our `home.erb` file we will have a local variable that is associated
+with a Chuck Norris joke.  Every time we refresh the page a new Chuck Norris
+joke will be generated.
 
 
 
