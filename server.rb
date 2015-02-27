@@ -2,10 +2,25 @@ require 'sinatra'
 require 'httparty'
 require 'json'
 require 'pry'
+require 'dotenv'
+
+Dotenv.load
 
 def get_joke
   json = HTTParty.get("http://api.icndb.com/jokes/random") # retrieves JSON
   json["value"]["joke"] # returns just the joke
+end
+
+def search_breweries_by_state(state)
+  all_breweries = []
+  breweries = HTTParty.get("http://beermapping.com/webservice/locstate/#{ENV["BREWERY_API_KEY"]}/#{state}")
+
+  breweries["bmp_locations"].each do |locations|
+    locations[1].each do |brewery|
+      all_breweries << { name: brewery["name"] }
+    end
+  end
+  all_breweries
 end
 
 # send home page to jokes
@@ -44,3 +59,11 @@ end
 ##### BREWERY API ########
 ##########################
 
+get '/beer' do
+  if params["state"]
+    beers = search_breweries_by_state(params["state"])
+  else
+    beers = ''
+  end
+  erb :beer, locals: { beers: beers }
+end

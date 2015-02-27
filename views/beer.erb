@@ -1,0 +1,16 @@
+<div class="row">
+  <h1>Find Beer By State</h1>
+
+  <form action="beer" method="get">
+    <input type="text" name="state" id="" value="" />
+    <input type="submit" name="" id="" value="Search" class="button success tiny" />
+  </form>
+
+  <% if !beers.empty? %>
+    <ul>
+      <% beers.each do |beer| %>
+        <li> <%= beer[:name] %></li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>
